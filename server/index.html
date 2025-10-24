@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Device Ingest (POST -> SSE)</title>
+  <style>
+    body{font-family: Arial; margin:20px}
+    #messages{border:1px solid #ccc; padding:10px; height:300px; overflow:auto; margin-bottom:10px}
+  </style>
+</head>
+<body>
+  <h2>Device messages (via HTTP POST)</h2>
+  <div id="messages"></div>
+
+  <h3>Send test message (browser)</h3>
+  <input id="msg" placeholder="Type a message" />
+  <button id="send">Send (POST)</button>
+
+  <script src="main.js"></script>
+</body>
+</html>
