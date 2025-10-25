@@ -1,6 +1,4 @@
 const out = document.getElementById('messages');
-const input = document.getElementById('msg');
-const btn = document.getElementById('send');
 
 function append(text){
   const el = document.createElement('div');
@@ -12,18 +10,23 @@ function append(text){
 // EventSource to receive server-sent events
 const es = new EventSource('/events');
 es.onopen = () => append('EventSource connected');
-es.onmessage = (e) => append('Received: ' + e.data);
-es.onerror = () => append('EventSource error/closed');
-
-btn.addEventListener('click', async () => {
-  const v = input.value.trim();
-  if (!v) return;
+es.onmessage = (e) => {
+  // Try to parse JSON messages and display nicely
   try {
-    const res = await fetch('/ingest', { method: 'POST', body: v });
-    if (res.ok) append('Sent (POST): ' + v);
-    else append('POST failed: ' + res.status);
+    const obj = JSON.parse(e.data);
+    if (obj && typeof obj === 'object') {
+      if ('temperature' in obj) {
+        append('Temperature: ' + obj.temperature);
+        return;
+      }
+      // otherwise show key: value lines
+      const parts = Object.entries(obj).map(([k,v]) => `${k}: ${v}`);
+      append(parts.join(', '));
+      return;
+    }
   } catch (err) {
-    append('POST error: ' + err.message);
+    // not JSON
   }
-  input.value = '';
-});
+  append('Received: ' + e.data);
+};
+es.onerror = () => append('EventSource error/closed');
